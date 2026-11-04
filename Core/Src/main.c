@@ -61,6 +61,44 @@ static void MX_TIM3_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+#define MOTOR_FORWARD  0
+#define MOTOR_REVERSE  1
+void Motor_SetDirection(uint8_t motor, uint8_t direction)
+{
+    if (motor == 0) // Right motor
+    {
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8,
+                          direction == MOTOR_FORWARD ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    }
+    else // Left motor
+    {
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_9,
+                          direction == MOTOR_FORWARD ? GPIO_PIN_SET : GPIO_PIN_RESET);
+    }
+}
+
+void Motor_SetSpeed(uint8_t motor, uint16_t speed)
+{
+    if (speed > 999)
+    {
+        speed = 999;
+    }
+
+    if (motor == 0) // Right motor
+    {
+        __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, speed);
+    }
+    else // Left motor
+    {
+        __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, speed);
+    }
+}
+
+void Motor_Stop(void)
+{
+    Motor_SetSpeed(0, 0);
+    Motor_SetSpeed(1, 0);
+}
 /* USER CODE END 0 */
 
 /**
